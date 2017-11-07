@@ -1,0 +1,2 @@
+shooter com clima baseado em clima real
+sistema de dinheiro para equipar as armas
