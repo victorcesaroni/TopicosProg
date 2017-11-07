@@ -12,11 +12,17 @@ function Entity(id, origin, sprite) {
     this.velocity = new Vector(0, 0);
     this.target = null;
     this.trackSpeed = 110 / 1000;
-    this.trackMinDistance = 10;
+    this.trackMinDistance = 10;    
     this.bbMin = sprite ? new Vector(-sprite.width * sprite.scale / 2, -sprite.height * sprite.scale / 2) : new Vector(0, 0);
     this.bbMax =  sprite ? new Vector(sprite.width * sprite.scale / 2, sprite.height * sprite.scale / 2) : new Vector(0, 0);
     this.colliding = false;
 }
+
+Entity.prototype.updateScale = function(scale) {
+    this.scale = scale;
+    this.sprite.scale = scale;    
+    this.bbMin = this.sprite ? new Vector(-this.sprite.width * this.sprite.scale.x / 2, -this.sprite.height * this.sprite.scale.y / 2) : new Vector(0, 0);
+    this.bbMax =  this.sprite ? new Vector(this.sprite.width * this.sprite.scale.x / 2, this.sprite.height * this.sprite.scale.y / 2) : new Vector(0, 0);}
 
 Entity.prototype.move = function(to) {
     this.origin = to.clone();

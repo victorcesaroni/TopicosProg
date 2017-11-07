@@ -11,6 +11,8 @@ function Game() {
     this.staticSprites = [
          this.coinSprite,
     ];
+
+    this.world = null;
 }
 
 var game = new Game();

@@ -18,5 +18,5 @@ Sprite.prototype.frame = function() {
 
 Sprite.prototype.draw = function(x, y) {
     //game.ctx.clearRect(x, y, this.width * this.scale, this.height * this.scale);
-    game.ctx.drawImage(this.image, this.xIndex * this.width, this.yIndex * this.height, this.width, this.height, x, y, this.width * this.scale, this.height * this.scale);
+    game.ctx.drawImage(this.image, this.xIndex * this.width, this.yIndex * this.height, this.width, this.height, x, y, this.width * this.scale.x, this.height * this.scale.y);
 }

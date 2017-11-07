@@ -1,4 +1,3 @@
-
 function createCanvas() {
 	resizeCanvas();
 	drawScene();
@@ -42,7 +41,7 @@ function drawScene() {
 		window.requestAnimationFrame || 
 		window.mozRequestAnimationFrame || 
 		window.msRequestAnimationFrame;
-
+	
 	var c = document.getElementById("main-canvas");
 	
 	var ctx = c.getContext("2d");
@@ -50,10 +49,30 @@ function drawScene() {
 	game.time = +new Date();    
 	game.ctx = ctx;
 	game.canvas = c;
-
+	
 	initInput(c);
 
 	ctx.clearRect(0, 0, c.width, c.height);
+
+	if (game.world == null) {
+		game.world = new World(30, 30, 0, 0, c.width, c.height, 30, 30);
+		game.world.readMap();
+	}
+
+	game.world.scale = 
+		new Vector(game.world.camWidth / (game.world.tileSize * game.world.tilesPerScreenX), 
+			game.world.camHeight / (game.world.tileSize * game.world.tilesPerScreenY));
+
+	game.entityList.forEach(function(a) {
+		if (a.sprite == game.zombieSprite) {
+			a.updateScale(new Vector(0.2, 0.2));
+		}
+		else if (a.sprite == game.mainPlayerSprite) {
+			a.updateScale(new Vector(1, 1));
+		}
+	}, this);
+
+	game.world.draw();
 
 	game.staticSprites.forEach(function(element) {
 		element.frame();
