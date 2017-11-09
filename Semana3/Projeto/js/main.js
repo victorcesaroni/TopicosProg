@@ -95,22 +95,29 @@ function drawScene() {
 
 	mouseEntity.origin = input.mousePos.clone();
 
-	mainPlayer.target = mouseEntity;
-	mainPlayer.frame();
-	mainPlayer.draw();	
+	if (mainPlayer.health < 0)
+		mainPlayer.health = 0;
 
-	var last = null;
+	if (mainPlayer.health > 0) {
+		mainPlayer.target = mouseEntity;
+		mainPlayer.frame();
+		mainPlayer.draw();	
 
-	enemyList.forEach(function(element) {
-		if (element.health > 0) {
-			element.target = mainPlayer;//last == null ? mainPlayer : last;
-			element.frame();
-			element.draw();
-			last = element;
-		}
-	}, this);
+		var last = null;
 
-	
+		enemyList.forEach(function(element) {
+			if (element.health > 0) {
+				element.target = mainPlayer;//last == null ? mainPlayer : last;
+				element.frame();
+				element.draw();
+				last = element;
+			}
+		}, this);
+	} else {
+		draw.strokeText("#000000", "GAME OVER", c.width / 2 - 123, c.height / 2 + 8, 40, 5);
+		draw.drawText("#FFFF00", "GAME OVER", c.width / 2 - 123, c.height / 2 + 8, 40);
+	}
+
 	hud.draw();
 
 	draw.strokeText("#000000", fps + " FPS (" + input.mousePos.x + ", " + input.mousePos.y + ")", 20, 30, 23, 4);
