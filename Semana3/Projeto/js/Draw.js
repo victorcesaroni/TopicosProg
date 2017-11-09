@@ -30,4 +30,18 @@ Draw.prototype.drawLine = function(color, x1, y1, x2, y2, weight) {
 	game.ctx.stroke();
 }
 
+Draw.prototype.drawText = function(color, text, x, y, size) {
+	game.ctx.font = size + "px Arial";
+	game.ctx.fillStyle = color;
+	game.ctx.fillText(text, x, y);
+}
+
+Draw.prototype.strokeText = function(color, text, x, y, size, weight) {
+	game.ctx.font = size + "px Arial";
+	game.ctx.strokeStyle = color;
+	game.ctx.lineWidth = weight;
+	game.ctx.strokeText(text, x, y);
+}
+
+
 var draw = new Draw();

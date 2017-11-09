@@ -11,7 +11,7 @@ function Entity(id, origin, sprite) {
     this.targetPos = new Vector(0, 0);
     this.velocity = new Vector(0, 0);
     this.target = null;
-    this.trackSpeed = 110 / 1000;
+    this.trackSpeed = 30 / 1000;
     this.trackMinDistance = 10;    
     this.bbMin = sprite ? new Vector(-sprite.width * sprite.scale / 2, -sprite.height * sprite.scale / 2) : new Vector(0, 0);
     this.bbMax =  sprite ? new Vector(sprite.width * sprite.scale / 2, sprite.height * sprite.scale / 2) : new Vector(0, 0);
@@ -22,10 +22,11 @@ Entity.prototype.updateScale = function(scale) {
     this.scale = scale;
     this.sprite.scale = scale;    
     this.bbMin = this.sprite ? new Vector(-this.sprite.width * this.sprite.scale.x / 2, -this.sprite.height * this.sprite.scale.y / 2) : new Vector(0, 0);
-    this.bbMax =  this.sprite ? new Vector(this.sprite.width * this.sprite.scale.x / 2, this.sprite.height * this.sprite.scale.y / 2) : new Vector(0, 0);}
+    this.bbMax =  this.sprite ? new Vector(this.sprite.width * this.sprite.scale.x / 2, this.sprite.height * this.sprite.scale.y / 2) : new Vector(0, 0);
+}
 
 Entity.prototype.move = function(to) {
-    this.origin = to.clone();
+    this.origin = to.clone().multiply(game.world.scale);
 }
 
 Entity.prototype.frame = function() {
@@ -40,9 +41,10 @@ Entity.prototype.draw = function() {
     var width = this.bbMax.x - this.bbMin.x
     var height = this.bbMax.y - this.bbMin.y;
     
-    //draw.drawRectangle(this.colliding ? "#000000" : "#00FF00", this.origin.x, this.origin.y, width, height, 1);
-    //draw.drawRectangle("#000000", this.origin.x, this.origin.y - 3 - 5, width, 5, 1);
-    //draw.drawFilledRectangle(draw.rgb2hex(255 - 255 * this.health / 100, 255 * this.health / 100, 0), this.origin.x, this.origin.y - 3 - 5, width * this.health / 100, 5);
+    //if (this.colliding)
+        //draw.drawRectangle(this.colliding ? "#000000" : "#00FF00", this.origin.x, this.origin.y, width, height, 1);
+    draw.drawRectangle("#000000", this.origin.x, this.origin.y - 3 - 5, width, 5, 1);
+    draw.drawFilledRectangle(draw.rgb2hex(255 - 255 * this.health / 100, 255 * this.health / 100, 0), this.origin.x, this.origin.y - 3 - 5, width * this.health / 100, 5);
 
 }
 
@@ -64,7 +66,7 @@ Entity.prototype.track = function() {
 
 Entity.prototype.tick = function() {
     if (this.target) {
-        this.origin.add(this.velocity.clone().multiply(game.tickInterval));
+        this.origin.add(this.velocity.clone().multiply(game.tickInterval).multiply(game.world.scale));
     }
 }
 
