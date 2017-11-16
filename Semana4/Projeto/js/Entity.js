@@ -1,5 +1,4 @@
-function Entity(id, origin, sprite) {
-    this.id = id;
+function Entity(origin, sprite) {
     this.team = 0;
     this.origin = origin;
     this.offset = new Vector(0, 0);
@@ -43,8 +42,8 @@ Entity.prototype.draw = function() {
     
     //if (this.colliding)
         //draw.drawRectangle(this.colliding ? "#000000" : "#00FF00", this.origin.x, this.origin.y, width, height, 1);
-    draw.drawRectangle("#000000", this.origin.x, this.origin.y - 3 - 5, width, 5, 1);
-    draw.drawFilledRectangle(draw.rgb2hex(255 - 255 * this.health / 100, 255 * this.health / 100, 0), this.origin.x, this.origin.y - 3 - 5, width * this.health / 100, 5);
+    //draw.drawRectangle("#000000", this.origin.x, this.origin.y - 3 - 5, width, 5, 1);
+    //draw.drawFilledRectangle(draw.rgb2hex(255 - 255 * this.health / 100, 255 * this.health / 100, 0), this.origin.x, this.origin.y - 3 - 5, width * this.health / 100, 5);
 
 }
 
@@ -65,9 +64,7 @@ Entity.prototype.track = function() {
 }
 
 Entity.prototype.tick = function() {
-    if (this.target) {
-        this.origin.add(this.velocity.clone().multiply(game.tickInterval).multiply(game.world.scale));
-    }
+    this.origin.add(this.velocity.clone().multiply(game.tickInterval).multiply(game.world.scale));
 }
 
 Entity.prototype.checkCollision = function(e) {

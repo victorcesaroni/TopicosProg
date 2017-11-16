@@ -1,4 +1,3 @@
-
 function createCanvas() {
 	resizeCanvas();
 	drawScene();
@@ -9,6 +8,12 @@ function resizeCanvas() {
 
 	c.width = window.innerWidth - 6;
 	c.height = window.innerHeight - 6;
+
+	game.world = null;
+}
+
+function onClick() {
+
 }
 
 function rgb2hex(red, green, blue) {
@@ -19,7 +24,8 @@ function rgb2hex(red, green, blue) {
 var fpsTimer = new Timer(1000);
 var fixedTimeTimer = new Timer(game.tickInterval);
 var mainPlayer = new Entity(0, new Vector(0, 0), game.mainPlayerSprite);
-var mouseEntity = new Entity(new Vector(0, 0), null);
+var mouseEntity = new Entity(-1, new Vector(0, 0), null);
+var hud = new Hud(mainPlayer, null);
 
 var enemyList = [
 	new Enemy(1, new Vector(0, 0), game.zombieSprite),
@@ -42,7 +48,7 @@ function drawScene() {
 		window.requestAnimationFrame || 
 		window.mozRequestAnimationFrame || 
 		window.msRequestAnimationFrame;
-
+	
 	var c = document.getElementById("main-canvas");
 	
 	var ctx = c.getContext("2d");
@@ -50,10 +56,32 @@ function drawScene() {
 	game.time = +new Date();    
 	game.ctx = ctx;
 	game.canvas = c;
-
+	
 	initInput(c);
 
 	ctx.clearRect(0, 0, c.width, c.height);
+
+	if (game.world == null) {
+		game.world = new World(30, 30, 0, 0, c.width, c.height, 30, 30);
+		game.world.readMap();
+	}
+
+	game.world.scale = 
+		new Vector(game.world.camWidth / (game.world.tileSize * game.world.tilesPerScreenX), 
+			game.world.camHeight / (game.world.tileSize * game.world.tilesPerScreenY));
+
+	game.entityList.forEach(function(a) {
+		if (a.health > 0) {
+			if (a.sprite == game.zombieSprite) {
+				a.updateScale(new Vector(0.05, 0.05).multiply(game.world.scale));
+			}
+			else if (a.sprite == game.mainPlayerSprite) {
+				a.updateScale(new Vector(0.25, 0.25).multiply(game.world.scale));
+			}
+		}
+	}, this);
+
+	game.world.draw();
 
 	game.staticSprites.forEach(function(element) {
 		element.frame();
@@ -67,29 +95,38 @@ function drawScene() {
 
 	mouseEntity.origin = input.mousePos.clone();
 
-	mainPlayer.target = mouseEntity;
-	mainPlayer.frame();
-	mainPlayer.draw();	
+	if (mainPlayer.health < 0)
+		mainPlayer.health = 0;
 
-	var last = null;
+	if (mainPlayer.health > 0) {
+		mainPlayer.target = mouseEntity;
+		mainPlayer.frame();
+		mainPlayer.draw();	
 
-	enemyList.forEach(function(element) {
-		element.target = mainPlayer;//last == null ? mainPlayer : last;
-		element.frame();
-		element.draw();
-		last = element;
-	}, this);
+		var last = null;
 
+		enemyList.forEach(function(element) {
+			if (element.health > 0) {
+				element.target = mainPlayer;//last == null ? mainPlayer : last;
+				element.frame();
+				element.draw();
+				last = element;
+			}
+		}, this);
+	} else {
+		draw.strokeText("#000000", "GAME OVER", c.width / 2 - 123, c.height / 2 + 8, 40, 5);
+		draw.drawText("#FFFF00", "GAME OVER", c.width / 2 - 123, c.height / 2 + 8, 40);
+	}
 
-	ctx.font = "23px Arial";
-	ctx.fillStyle = rgb2hex(255, 0, 0);
+	hud.draw();
 
-	ctx.fillStyle = rgb2hex(255, 0, 0);
-	ctx.fillText(fps + " FPS (" + input.mousePos.x + ", " + input.mousePos.y + ")", 20, 30);
+	draw.strokeText("#000000", fps + " FPS (" + input.mousePos.x + ", " + input.mousePos.y + ")", 20, 30, 23, 4);
+	draw.drawText("#FFFFFF", fps + " FPS (" + input.mousePos.x + ", " + input.mousePos.y + ")", 20, 30, 23);
 
-	draw.drawFilledRectangle("#000000", input.mousePos.x - 3, input.mousePos.y - 3, 6, 6);
-
-	//ctx.strokeText(fps + " FPS", 20, 30);
+	if (input.lastClickTime + 500 >= +new Date()) {
+		draw.drawFilledRectangle("#000000", input.mousePos.x - 6, input.mousePos.y - 6, 12, 12);
+		draw.drawFilledRectangle("#FFFFFF", input.mousePos.x - 3, input.mousePos.y - 3, 6, 6);
+	}
 
 	frameCount++;
 
@@ -134,27 +171,34 @@ function fixedTimeTick() {
 	}, this);
 
 	game.entityList.forEach(function(a) {
-		game.entityList.forEach(function(b) {
-			if (a.id != b.id && a.team != b.team) {
-				if (a.checkCollision(b)) {
-					a.colliding = true;
+		if (a.health > 0) {
+			game.entityList.forEach(function(b) {
+				if (b.health > 0) {
+					if (a.id != b.id && a.team != b.team) {
+						if (a.checkCollision(b)) {
+							a.colliding = true;
+						}
+					}
 				}
-			}
-		}, this);
+			}, this);
+		}
 	}, this);
 
 	enemyList.forEach(function(e) {
-		//if (Math.floor(Math.random() * 80) == 0) 
-			e.track();
+		if (e.health > 0) {
+			//if (Math.floor(Math.random() * 80) == 0) 
+				e.track();
 
-		if (e.colliding ) {
-			if (Math.floor(Math.random() * 10) == 0) {
-				//e.velocity.x = 0;
-				//e.velocity.y = 0;
-				e.health = Math.floor(Math.random() * 100);
+			if (e.colliding ) {
+				if (Math.floor(Math.random() * 10) == 0) {
+					//e.velocity.x = 0;
+					//e.velocity.y = 0;
+					e.health -= Math.floor(Math.random() * 10);
+					mainPlayer.health -= Math.floor(Math.random() * 5);
+				}
 			}
-		}
 
-		e.tick();
+			e.tick();
+		}
 	}, this);
 }

@@ -8,7 +8,17 @@ function Sprite(imageSrc, width, height, scale, count, yIndex,  interval) {
     this.xIndex = 0;
     this.yIndex = yIndex;
     this.frameCount = 0;
-    this.scale = scale;   
+    this.scale = scale;
+    this.id = -1;
+}
+
+Sprite.prototype.clone = function() {    
+    var sprite = new Sprite(this.image.src, this.width * this.count, this.height, this.scale, this.count, this.yIndex, this.interval);
+    sprite.frameCount = this.frameCount;
+    sprite.xIndex = this.xIndex;
+    sprite.image = this.image;
+    sprite.id = this.id;
+    return sprite;
 }
 
 Sprite.prototype.frame = function() {    
