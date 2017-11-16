@@ -182,6 +182,25 @@ function fixedTimeTick() {
 			var bulletsPerShoot = 1;
 
 			for (var i = 0; i < bulletsPerShoot; i++) {
+
+				// cheat: aimbot
+				{
+					var target = null;
+					var dist = Infinity;
+
+					game.enemyList.forEach(function(e) {
+						var d = game.mainPlayer.origin.clone().subtract(e.origin).length();
+						if (d < dist) {
+							dist = d;
+							target = e;
+						}
+					}, this);
+
+					if (target) {
+						input.mousePos = target.origin.clone().add(target.bbMax.clone().divide(2));
+					}
+				}
+
 				var vel = input.mousePos.clone().subtract(game.mainPlayer.origin.clone().add(new Vector(20, 10))).normalize();
 
 				vel.multiply((4 + Math.floor(Math.random() * 10)) / (1000 / game.tickInterval));
