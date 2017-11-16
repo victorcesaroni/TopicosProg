@@ -60,7 +60,7 @@ function drawScene() {
 	}
 	
 	if (game.enemyList.length == 0) {
-		for (var i = 0; i < 300; i++) {
+		for (var i = 0; i < 30; i++) {
 
 			var e = new Enemy(new Vector(Math.floor(Math.random() * game.world.camWidth),Math.floor(Math.random() * game.world.camHeight)), game.zombieSprite.clone());
 
@@ -176,10 +176,10 @@ function fixedTimeTick() {
 	}
 
 	// TODO: fazer classe Weapon e colocar isso la
-	var fireDelay = 10;
+	var fireDelay = 0;
 	if (lastFireTime + fireDelay < +new Date()) {
 		if (input.keyState['mouse1'] === 'keypress') {
-			var bulletsPerShoot = 5;
+			var bulletsPerShoot = 1;
 
 			for (var i = 0; i < bulletsPerShoot; i++) {
 				var vel = input.mousePos.clone().subtract(game.mainPlayer.origin.clone().add(new Vector(20, 10))).normalize();
