@@ -117,7 +117,8 @@ function drawScene() {
 		draw.strokeText("#000000", "GAME OVER", c.width / 2 - 123, c.height / 2 + 8, 40, 5);
 		draw.drawText("#FFFF00", "GAME OVER", c.width / 2 - 123, c.height / 2 + 8, 40);
 	}
-
+	
+	console.log("a" + game.started);
 	hud.draw();
 
 	draw.strokeText("#000000", fps + " FPS (" + input.mousePos.x + ", " + input.mousePos.y + ")", 20, 30, 23, 4);
